@@ -1,32 +1,44 @@
 version: '3'
 
 services:
-
   app:
-    image: node:18.12-alpine
-    volumes:
-      - .:/app
-    working_dir: /app
-    command: node index.js
-    expose:
-      - 3000
+    build: .  
     environment:
       - PORT=3000
     networks:
-      - app_network
+      - app-network
+    command: sh -c "wait-for db:3306 -t 40 -- npm run migrations && npm start"
+    depends_on:
+      - db
+
+  db:
+    image: mysql:5.7
+    restart: always
+    platform: linux/amd64
+    volumes:
+      - mysql-app-data:/var/lib/mysql
+    environment:
+      - MYSQL_DATABASE=appdb
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_USER=mainuser
+      - MYSQL_PASSWORD=password
+    networks:
+      - app-network
 
   nginx:
     image: nginx:1.15.0-alpine
     ports:
       - 8080:80
     networks:
-      - app_network
+      - app-network
     volumes:
       - ./nginx:/etc/nginx/conf.d
     depends_on:
       - app
 
 networks:
-
-  app_network:
+  app-network:
     driver: bridge
+
+volumes:
+  mysql-app-data:
