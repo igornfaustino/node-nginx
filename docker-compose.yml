@@ -1,8 +1,9 @@
 version: '3'
 
 services:
+
   app:
-    image: node:18.12
+    image: node:18.12-alpine
     volumes:
       - .:/app
     working_dir: /app
@@ -11,3 +12,21 @@ services:
       - 3000
     environment:
       - PORT=3000
+    networks:
+      - app_network
+
+  nginx:
+    image: nginx:1.15.0-alpine
+    ports:
+      - 8080:80
+    networks:
+      - app_network
+    volumes:
+      - ./nginx:/etc/nginx/conf.d
+    depends_on:
+      - app
+
+networks:
+
+  app_network:
+    driver: bridge
