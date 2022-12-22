@@ -10,11 +10,11 @@ const client = knex(config)
 
 app.get('/', async (req, res) => {
     await client.insert({name: faker.name.firstName()}).into('peoples')
-    const peoples = await client.select('name').from('peoples')
+    const people = await client.select('name').from('peoples')
     res.send(`
         <h1>Full Cycle Rocks!</h1>
         <ul>
-            ${peoples.map(people => `<li>${people.name}</li>`).join('\n')}
+            ${people.map(person => `<li>${person.name}</li>`).join('\n')}
         </ul>    
     `)
 })
