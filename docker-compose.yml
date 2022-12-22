@@ -1,0 +1,14 @@
+version: '3'
+
+services:
+  app:
+    image: node:18.12
+    volumes:
+      - .:/app
+    working_dir: /app
+    command: node index.js
+    expose:
+      - 3000
+    environment:
+      - PORT=3000
+      
